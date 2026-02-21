@@ -4,6 +4,7 @@ import shutil
 from openpyxl import load_workbook
 from openpyxl.drawing.image import Image as XLImage
 from typing import List, Dict, Any
+from datetime import datetime
 from .models import ExcelItem
 
 class ExcelService:
@@ -13,13 +14,16 @@ class ExcelService:
         self.base_dir = base_dir
         # 确保目录存在
         os.makedirs(base_dir, exist_ok=True)
+        # 备份目录
+        self.backup_dir = os.path.join(base_dir, "backups")
+        os.makedirs(self.backup_dir, exist_ok=True)
     
     def list_excel_files(self) -> List[str]:
         """列出所有Excel文件"""
         try:
             return [
                 f for f in os.listdir(self.base_dir)
-                if f.endswith(".xlsx")
+                if f.endswith(".xlsx") and f != "temp.xlsx"
             ]
         except FileNotFoundError:
             return []
@@ -57,7 +61,8 @@ class ExcelService:
         """保存数据到Excel文件"""
         path = os.path.join(self.base_dir, file_name)
         temp_path = os.path.join(self.base_dir, "temp.xlsx")
-        backup_path = f"{path}.bak"
+        # 备份放到备份目录，保留原始文件名并添加 .bak 后缀
+        backup_path = os.path.join(self.backup_dir, f"{file_name}.bak")
         
         # 验证数据
         self._validate_records(records)
@@ -90,8 +95,8 @@ class ExcelService:
     def undo(self, file_name: str) -> bool:
         """撤回上次保存"""
         path = os.path.join(self.base_dir, file_name)
-        backup_path = f"{path}.bak"
-        
+        backup_path = os.path.join(self.backup_dir, f"{file_name}.bak")
+
         if os.path.exists(backup_path):
             os.replace(backup_path, path)
             return True
@@ -113,9 +118,14 @@ class ExcelService:
                 cell = ws[f"J{row}"]
                 image_path = cell.value
                 
-                if image_path and os.path.exists(image_path):
+                # 如果是相对路径，优先在 data/pictures 下查找
+                candidate = image_path
+                if image_path and not os.path.isabs(image_path):
+                    candidate = os.path.join("data", "pictures", image_path)
+
+                if image_path and os.path.exists(candidate):
                     try:
-                        img = XLImage(image_path)
+                        img = XLImage(candidate)
                         img.width = 80
                         img.height = 80
                         ws.add_image(img, f"J{row}")
@@ -150,12 +160,11 @@ class ExcelService:
             raise FileNotFoundError(f"文件不存在: {file_name}")
         
         stat = os.stat(path)
-        
         return {
             "name": file_name,
             "path": path,
             "size": stat.st_size,
-            "modified": stat.st_mtime
+            "modified": datetime.fromtimestamp(stat.st_mtime)
         }
 
 

@@ -1,7 +1,6 @@
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from typing import List
-import uvicorn
 import os
 
 from .models import ExcelData, ExcelFile, SaveRequest, UndoResponse
@@ -146,6 +145,11 @@ async def health_check():
 
 if __name__ == "__main__":
     # 开发服务器
+    try:
+        import uvicorn
+    except Exception:
+        raise RuntimeError("缺少运行时依赖 uvicorn，请安装后再以脚本方式运行")
+
     uvicorn.run(
         "backend.main:app",
         host="0.0.0.0",

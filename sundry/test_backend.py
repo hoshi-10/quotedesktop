@@ -6,8 +6,9 @@
 import sys
 import os
 
-# 添加backend目录到Python路径
-sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+# 将项目根目录加入 Python 路径，以便能导入 backend 包
+project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
+sys.path.insert(0, project_root)
 
 def test_imports():
     """测试模块导入"""
@@ -28,6 +29,7 @@ def test_service():
     print("\n测试Excel服务...")
     
     try:
+        from backend.excel_service import ExcelService
         service = ExcelService()
         
         # 测试列出文件
@@ -64,6 +66,7 @@ def test_models():
     
     try:
         # 测试创建ExcelItem
+        from backend.models import ExcelItem
         item = ExcelItem(
             内容="测试内容",
             数量=2,
