@@ -1,0 +1,40 @@
+{
+  "backend": {
+    "host": "localhost",
+    "port": 8000,
+    "api_base": "http://localhost:8000",
+    "endpoints": {
+      "files": "/files",
+      "read": "/read/{file}",
+      "save": "/save/{file}",
+      "undo": "/undo/{file}",
+      "health": "/health"
+    }
+  },
+  "frontend": {
+    "port": 3000,
+    "dev_server": "http://localhost:3000"
+  },
+  "electron": {
+    "window": {
+      "width": 1200,
+      "height": 800,
+      "minWidth": 800,
+      "minHeight": 600
+    },
+    "preload": "electron/preload.js",
+    "main": "electron/main.js"
+  },
+  "paths": {
+    "data_dir": "data",
+    "excel_files": "data/excel_files",
+    "pictures": "data/pictures",
+    "backups": "data/excel_files/backups"
+  },
+  "features": {
+    "auto_backup": true,
+    "undo_enabled": true,
+    "image_support": true,
+    "validation": true
+  }
+}
