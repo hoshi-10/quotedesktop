@@ -3,11 +3,13 @@
   "private": true,
   "version": "0.0.0",
   "type": "module",
-"main": "electron/main.cjs",  "scripts": {
+  "main": "electron/main.cjs",
+  "scripts": {
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview",
-  "electron": "electron ."
+    "build:exe": "electron-builder",
+    "electron": "electron ."
   },
   "dependencies": {
     "element-plus": "^2.13.2",
@@ -16,6 +18,17 @@
   "devDependencies": {
     "@vitejs/plugin-vue": "^6.0.2",
     "electron": "^40.6.0",
+    "electron-builder": "^26.8.1",
     "vite": "^7.3.1"
+  },
+   "build": {
+  "appId": "com.quote.desktop",
+  "productName": "QuoteDesktop",
+  "directories": {
+    "output": "release"
+  },
+  "win": {
+    "target": "nsis"
   }
+}
 }

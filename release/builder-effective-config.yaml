@@ -1,0 +1,9 @@
+directories:
+  output: release
+  buildResources: build
+appId: com.quote.desktop
+productName: QuoteDesktop
+win:
+  target: nsis
+files: []
+electronVersion: 40.6.0
