@@ -1,5 +1,88 @@
-# Vue 3 + Vite
+# quotedesktop
+一个使用 Vue 和 Electron（Electron 调用本地 Python 服务） 构建的轻量级桌面报价管理系统，专使用共享本地文件的小团队设计。
 
-This template should help get you started developing with Vue 3 in Vite. The template uses Vue 3 `<script setup>` SFCs, check out the [script setup docs](https://v3.vuejs.org/api/sfc-script-setup.html#sfc-script-setup) to learn more.
 
-Learn more about IDE Support for Vue in the [Vue Docs Scaling up Guide](https://vuejs.org/guide/scaling-up/tooling.html#ide-support).
+## 软件功能描述：
+在软件指定文件夹新建excel表格或将excel表格放入软件指定文件夹里面，软件自动导入解析数据，可读取、查询和写入数据（增删改查），且有撤回功能。求和excel表格里面的总价得出合计，将数据显示在软件界面，并保存数据到excel表格。
+（支持导入、导出不同格式的excel表格，支持录入不同图片格式的文件）
+
+## 软件界面描述：
+|打开软件界面，自动显示所有excel表文件名称|
+1. excel总览界面。excel表格导入和管理
+|点击所选excel表，打开excel表格文件|
+2. 数据库操作界面。显示excel表格内的所有数据，可对数据进行查询、新增、删除、修改。对一个excel表的项目合计进行求和。将数据写入excel表格后自动保存，保存后到指定文件夹内可查看excel表格文件
+
+放置图片时，图片实质上是先存储在某个路径的文件夹中。保存excel表格后，软件会将图片路径的图片存储到对应excel表格中。
+关于图片的删除，为确保工作中撤回误删图片（撤回错误操作只需要重新添加文件路径），软件在运行期间删除图片，不会直接把路径下的图片删除，仅将图片文件路径删除，图片文件仍在路径下。在关闭软件后，将没有使用到的图片文件自动删除。
+
+## excel表格数据结构描述（详见存储数据类型）：
+项目序号按顺序自动生成，内容、数量、价格必填，总价、数量、价格、项目图片、材料、规格尺寸、经办人、备注选填。总价=数量*价格，所有总价求和=合计。数据结构：内容、材料、经办人、备注是字符串型；序号是整型；规格尺寸、数量、价格、合计是数字；项目图片是图像
+
+## 软件项目结构
+```
+quotedesktop/
+│
+├─ README.md
+├─ backend/
+│   ├─ main.py
+│   ├─ excel_service.py
+│   └─ models.py
+│
+├─ frontend/
+│   ├─ src/
+|   ├─ App.vue
+│   └─ package.json
+│
+├─ data/           # 指定Excel目录
+│  ├─ excel_files/
+│  |   └─ "A单位"结算清单.xlsx
+|  └─ pictures/
+|      └─ "A单位"/
+│           └─ 图片1.jpg
+└─ electron/       # 桌面壳
+```
+
+## 前端页面逻辑
+页面 1：Excel 总览
+- 调 /data/excel_files/
+ 展示文件名
+
+- 点击进入详情页
+
+页面 2：数据操作页
+- 表格展示
+- 可编辑单元格
+- 自动计算总价
+- 显示底部合计
+
+## 后端逻辑
+- 调 /data/excel_files/ 展示所有excel表格文件名称
+- 数据先写入 temp.xlsx，成功保存后替换原文件。既可撤回错误操作，也可为用户提供数据备份功能。
+- 数据验证
+
+## 接口
+FastAPI 接口结构
+GET  /files
+GET  /read/{file}
+POST /save/{file}
+POST /undo/{file}
+
+## 软件使用方法：
+1. 下载软件安装包，双击运行安装程序，按照提示完成安装。
+2. 安装完成后，在开始菜单或桌面上找到软件图标，双击运行。
+3. 软件打开后，默认会显示所有在指定文件夹内的excel表格文件名称。
+4. 点击所选excel表格文件名称，即可打开该文件。
+5. 在数据库操作界面，可对excel表格数据进行查询、新增、删除、修改操作。
+6. 对一个excel表格的项目总价进行求和，合计结果会显示在界面上。
+7. 点击保存按钮，即可将数据写入excel表格文件，并自动保存到指定文件夹内。
+8. 保存完成后，即可查看excel表格文件。
+9. 退出软件，直接关闭软件。
+
+## 后续扩展
+1. 支持更多文件格式，如CSV等。
+2. 支持图片上传和查看。
+3. 支持批量导入数据。
+
+## 注意：
+1. 软件不需要考虑并发问题，因为软件运行时只有一个用户，且数据操作都是单用户操作。
+2. 开发过程一切应以最尽量简单的操作实现、简洁的过程逻辑编写。先完成基本功能，再考虑优化和完善。
