@@ -3,8 +3,14 @@ from fastapi.middleware.cors import CORSMiddleware
 from typing import List
 import os
 
-from .models import ExcelData, ExcelFile, SaveRequest, UndoResponse
-from .excel_service import excel_service
+try:
+    # 当作为模块导入时使用相对导入
+    from .models import ExcelData, ExcelFile, SaveRequest, UndoResponse
+    from .excel_service import excel_service
+except ImportError:
+    # 当直接运行时使用绝对导入
+    from models import ExcelData, ExcelFile, SaveRequest, UndoResponse
+    from excel_service import excel_service
 
 app = FastAPI(
     title="报价桌面系统API",
@@ -144,16 +150,80 @@ async def health_check():
     return {"status": "healthy", "service": "quotedesktop-backend"}
 
 if __name__ == "__main__":
-    # 开发服务器
+    import sys
+    import subprocess
+    from pathlib import Path
+    
+    print("=" * 60)
+    print("报价桌面系统 - 后端服务")
+    print("=" * 60)
+    
+    # 检查并安装依赖
+    print("\n检查Python依赖...")
+    required_packages = [
+        "fastapi",
+        "uvicorn[standard]", 
+        "pandas",
+        "openpyxl",
+        "pydantic"
+    ]
+    
+    missing = []
+    for package in required_packages:
+        package_name = package.split('[')[0] if '[' in package else package
+        try:
+            __import__(package_name)
+        except ImportError:
+            missing.append(package)
+    
+    if missing:
+        print(f"缺少依赖: {', '.join(missing)}")
+        print("正在安装依赖...")
+        try:
+            subprocess.check_call([sys.executable, "-m", "pip", "install", "-r", "requirements.txt"])
+            print("依赖安装完成")
+        except subprocess.CalledProcessError:
+            print("依赖安装失败，请手动运行: pip install -r requirements.txt")
+            sys.exit(1)
+    else:
+        print("所有依赖已安装")
+    
+    # 确保必要的目录存在
+    print("\n检查数据目录...")
+    base_dir = Path(__file__).parent.parent / "data"
+    directories = [
+        base_dir,
+        base_dir / "backups"
+    ]
+    
+    for directory in directories:
+        if not directory.exists():
+            directory.mkdir(parents=True, exist_ok=True)
+            print(f"创建目录: {directory}")
+        else:
+            print(f"目录已存在: {directory}")
+    
+    # 启动服务
+    print("\n" + "=" * 60)
+    print("服务地址: http://localhost:8000")
+    print("API文档: http://localhost:8000/docs")
+    print("健康检查: http://localhost:8000/health")
+    print("按 Ctrl+C 停止服务")
+    print("=" * 60 + "\n")
+    
     try:
         import uvicorn
-    except Exception:
-        raise RuntimeError("缺少运行时依赖 uvicorn，请安装后再以脚本方式运行")
-
-    uvicorn.run(
-        "backend.main:app",
-        host="0.0.0.0",
-        port=8000,
-        reload=True,
-        log_level="info"
-    )
+        # 直接运行时，不使用reload模式，避免模块导入问题
+        uvicorn.run(
+            app,
+            host="0.0.0.0",
+            port=8000,
+            reload=False,
+            log_level="info"
+        )
+    except KeyboardInterrupt:
+        print("\n服务已停止")
+        sys.exit(0)
+    except Exception as e:
+        print(f"启动服务失败: {e}")
+        sys.exit(1)

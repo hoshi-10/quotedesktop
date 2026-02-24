@@ -5,11 +5,11 @@ from datetime import datetime
 class ExcelItem(BaseModel):
     """Excel表格中的项目数据模型"""
     序号: Optional[int] = Field(None, description="项目序号，自动生成")
-    内容: str = Field(..., description="项目内容，必填")
+    内容: Optional[str] = Field(None, description="项目内容")
     材料: Optional[str] = Field(None, description="材料")
-    规格尺寸: Optional[float] = Field(None, description="规格尺寸")
-    数量: float = Field(..., gt=0, description="数量，必须大于0")
-    价格: float = Field(..., ge=0, description="价格，不能为负")
+    规格尺寸: Optional[str] = Field(None, description="规格尺寸，可以是字符串如'40*60*120厘米'")
+    数量: Optional[float] = Field(None, ge=0, description="数量，不能为负")
+    价格: Optional[float] = Field(None, ge=0, description="价格，不能为负")
     总价: Optional[float] = Field(None, description="总价 = 数量 * 价格")
     项目图片: Optional[str] = Field(None, description="图片路径")
     经办人: Optional[str] = Field(None, description="经办人")

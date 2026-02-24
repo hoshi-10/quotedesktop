@@ -49,6 +49,13 @@ backend/
 
 ## 快速开始
 
+### 前置步骤
+进入虚拟环境：
+python -m venv .venv
+激活虚拟环境：
+.venv\Scripts\activate.bat
+
+
 ### 1. 安装依赖
 ```bash
 pip install -r backend/requirements.txt
@@ -56,13 +63,30 @@ pip install -r backend/requirements.txt
 
 ### 2. 启动服务
 ```bash
-python run_backend.py
+python backend/main.py
 ```
+
+**启动脚本会自动：**
+- ✅ 检查并安装依赖
+- ✅ 创建必要的目录
+- ✅ 启动FastAPI服务
 
 ### 3. 访问API
 - 服务地址: http://localhost:8000
 - 交互式文档: http://localhost:8000/docs
 - 备用文档: http://localhost:8000/redoc
+
+### 其他启动方式
+
+**使用uvicorn（支持热重载）：**
+```bash
+uvicorn backend.main:app --host 0.0.0.0 --port 8000 --reload
+```
+
+**使用Python模块：**
+```bash
+python -m backend.main
+```
 
 ## 数据模型
 
@@ -87,13 +111,11 @@ python run_backend.py
 ### 数据目录结构
 ```
 data/
-├── excel_files/     # Excel文件存储目录
-│   ├── 文件1.xlsx
-│   ├── 文件2.xlsx
-│   └── temp.xlsx    # 临时文件（自动生成）
-└── pictures/        # 图片存储目录
-    └── 单位名称/    # 按单位分类
-         └── 图片文件
+├── 文件1.xlsx
+├── 文件2.xlsx
+├── temp.xlsx        # 临时文件（自动生成）
+└── backups/        # 备份文件目录
+    └── 文件1.xlsx.bak
 ```
 
 ### 备份机制
