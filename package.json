@@ -13,7 +13,8 @@
   },
   "dependencies": {
     "element-plus": "^2.13.2",
-    "vue": "^3.5.25"
+    "vue": "^3.5.25",
+    "xlsx": "^0.18.5"
   },
   "devDependencies": {
     "@vitejs/plugin-vue": "^6.0.2",
@@ -21,14 +22,14 @@
     "electron-builder": "^26.8.1",
     "vite": "^7.3.1"
   },
-   "build": {
-  "appId": "com.quote.desktop",
-  "productName": "QuoteDesktop",
-  "directories": {
-    "output": "release"
-  },
-  "win": {
-    "target": "nsis"
+  "build": {
+    "appId": "com.quote.desktop",
+    "productName": "QuoteDesktop",
+    "directories": {
+      "output": "release"
+    },
+    "win": {
+      "target": "nsis"
+    }
   }
-}
 }
