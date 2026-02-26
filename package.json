@@ -31,5 +31,17 @@
     "win": {
       "target": "nsis"
     }
-  }
+  },
+  "description": "一个使用 Vue 和 Electron（Electron 调用本地 Python 服务） 构建的轻量级桌面报价管理系统，专使用共享本地文件的小团队设计。",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/hoshi-10/quotedesktop.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/hoshi-10/quotedesktop/issues"
+  },
+  "homepage": "https://github.com/hoshi-10/quotedesktop#readme"
 }

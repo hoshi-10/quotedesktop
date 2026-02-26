@@ -1,6 +1,8 @@
 <template>
   <div>
-
+<el-button type="success" @click="importExcel" style="margin-bottom:20px">
+  导入Excel
+</el-button>
     <!-- 合计 -->
     <h3>合计：{{ totalSum }}</h3>
 
@@ -44,7 +46,7 @@
       </el-button>
 
     </el-form>
-
+<ExcelTable :list="list" style="margin: 20px 0;" />
     <!-- 表格 -->
     <el-input
 v-model="keyword"
@@ -105,7 +107,14 @@ const form = reactive({
   remark: '',//备注
   image: ''//图片暂时空着
 })
+const importExcel = async () => {
+  const data = await window.api.selectAndReadExcel()
+  console.log('导入的数据:', data)
 
+  if (data.length > 0) {
+    list.value = data
+  }
+}
 onMounted(async () => {
   const result = await window.api.readExcel()
   list.value = result

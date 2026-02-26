@@ -1,4 +1,5 @@
-const { ipcMain, app,BrowserWindow } = require('electron')
+
+const { ipcMain, app,BrowserWindow,dialog } = require('electron')
 const fs = require('fs')
 const path = require('path')
 const XLSX = require('xlsx')
@@ -6,6 +7,27 @@ const XLSX = require('xlsx')
 let mainWindow
 
 const excelPath = path.join(app.getPath('documents'), 'data.xlsx')
+
+ipcMain.handle('select-and-read-excel', async () => {
+  const result = await dialog.showOpenDialog({
+    properties: ['openFile'],
+    filters: [{ name: 'Excel Files', extensions: ['xlsx'] }]
+  })
+
+  if (result.canceled) return []
+
+  const filePath = result.filePaths[0]
+
+  try {
+    const workbook = XLSX.readFile(filePath)
+    const sheet = workbook.Sheets[workbook.SheetNames[0]]
+    const data = XLSX.utils.sheet_to_json(sheet, { defval: '' })
+    return data
+  } catch (error) {
+    console.error('读取失败:', error)
+    return []
+  }
+})
 
 ipcMain.handle('read-excel', async () => {
   try {
@@ -69,3 +91,5 @@ app.on('window-all-closed', () => {
     app.quit()
   }
 })
+console.log('__dirname:', __dirname)
+console.log('preload path:', path.join(__dirname, 'preload.cjs'))
